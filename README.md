@@ -124,13 +124,13 @@ Aplicação web simples para cadastro e exibição de produtos, desenvolvida com
 Execute o seguinte script SQL para criar as tabelas necessárias no seu banco de dados **SQL Server**:
 
 ```sql
-CREATE TABLE Produtos (
-    id INT PRIMARY KEY IDENTITY(1,1),
-    nome NVARCHAR(100) NOT NULL,
-    descricao NVARCHAR(255),
-    preco DECIMAL(10, 2) NOT NULL,
-    imagem NVARCHAR(255) -- Caminho para a imagem armazenada no Azure Blob Storage
-);
+ CREATE TABLE Produtos (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nome NVARCHAR(255),
+    descricao NVARCHAR(MAX),
+    preco DECIMAL(18,2),
+    imagem_url NVARCHAR(2083)
+)
 ```
 
 Este script cria a tabela `Produtos` com as colunas necessárias para armazenar o nome, descrição, preço e o caminho da imagem.
