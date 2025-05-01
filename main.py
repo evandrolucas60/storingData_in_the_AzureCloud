@@ -53,12 +53,53 @@ def insert_product_to_db(name, price, description, image_url):
         st.error(f"Erro ao inserir produto no banco de dados: {e}")
         return False
     
+def list_products_from_db():
+    try:
+        connection = pymssql.connect(
+            host=SQL_SERVER,
+            user=SQL_USERNAME,
+            password=SQL_PASSWORD,
+            database=SQL_DATABASE
+        )
+        cursor = connection.cursor()
+        sql = "SELECT * FROM Produtos"
+        cursor.execute(sql)
+        products = cursor.fetchall()
+        cursor.close()
+        connection.close()
+        return products
+    except Exception as e:
+        st.error(f"Erro ao listar produtos do banco de dados: {e}")
+        return []
+    
+def display_products():
+    products = list_products_from_db()
+    if products:
+        cards_by_row = 3
+        cols = st.columns(cards_by_row)
+        for i, product in enumerate(products):
+            col = cols[i % cards_by_row]
+            with col:
+                st.markdown(f"### {product[1]}")
+                st.markdown(f"**Descrição:** {product[2]}")
+                st.markdown(f"**Preço:** R$ {product[3]:.2f}")
+                if product[4]:
+                    html_img = f'<img src="{product[4]}" alt="Imagem do produto" style="width: 200px; height: 200px;">'
+                    st.markdown(html_img, unsafe_allow_html=True)
+                st.markdown("---")
+            if (i + 1) % cards_by_row == 0 and (i + 1) < len(products):
+                    cols = st.columns(cards_by_row)     
+    else:
+        st.info("Nenhum produto cadastrado.")
+
 
 if st.button("Cadastrar produto"):
     insert_product_to_db(product_name, product_price, product_description, save_image_to_blob(product_image))
     return_message = 'Produto cadastrado com sucesso!'
+    display_products()
 
 st.header('Produtos cadastrados')
 
 if st.button("Listar produtos"):
+    display_products()
     return_message = 'Produtos listados com sucesso!'
